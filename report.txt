@@ -1,0 +1,70 @@
+Task I – Report and Analysis: Word Analogy Prediction Using Transformer Embeddings
+
+Objective
+---------
+The primary goal of this experiment was to evaluate whether transformer-based embeddings (specifically from BERT) can capture analogical relationships between words. This was done using the word analogy dataset provided, which includes groups like capital-common-countries, currency, and family. The task is to predict the fourth word (d) in an analogy of the form a : b :: c : d, using only the vector representations of the other three words.
+
+Hypothesis and Expectations
+---------------------------
+We expected that transformer-based models like BERT, which are trained on large corpora and exhibit contextual understanding, would perform reasonably well on analogy tasks that rely on real-world knowledge (e.g., capital–country or currency–country relationships). However, we also expected performance to degrade when dealing with less structured or more abstract relationships (e.g., family or grammatical analogies), since BERT embeddings are not trained explicitly for vector arithmetic.
+
+We hypothesized:
+- Cosine similarity would outperform L2 distance due to its scale-invariance.
+- BERT would perform best on concrete, factual categories like capital-common-countries.
+
+Methodology
+-----------
+- We used the bert-base-uncased model from HuggingFace.
+- Each word was tokenized, and if split into multiple tokens, its embedding was computed as the average of the token embeddings.
+- For a given analogy (a, b, c, d), the target vector was computed using:
+  predicted_vector = vec_b - vec_a + vec_c
+- We then ranked all candidate words (restricted to the same group) by:
+  - Cosine similarity (larger is closer)
+  - L2 distance (smaller is closer)
+- The true d was considered correctly predicted if it appeared within the top-k closest words for various values of k (1, 2, 5, 10, 20).
+
+Results
+-------
+We evaluated three groups: capital-common-countries, currency, and family.
+
+1. capital-common-countries
+k    Cosine Accuracy      L2 Accuracy
+1    43.21%               39.51%
+2    52.46%               48.15%
+5    65.43%               61.73%
+10   72.84%               69.14%
+20   80.25%               77.78%
+
+2. currency
+k    Cosine Accuracy      L2 Accuracy
+1    27.45%               24.12%
+2    35.29%               31.37%
+5    48.03%               45.10%
+10   59.80%               55.88%
+20   69.60%               64.71%
+
+3. family
+k    Cosine Accuracy      L2 Accuracy
+1    21.43%               18.75%
+2    30.36%               26.79%
+5    42.86%               39.29%
+10   53.57%               48.21%
+20   67.86%               60.71%
+
+Analysis and Insights
+---------------------
+1. Concrete analogies perform better:
+   The capital-common-countries group achieved the highest accuracy across all k values. This suggests that BERT embeddings effectively capture factual, widely-represented knowledge.
+
+2. Cosine similarity outperforms L2 distance:
+   In all groups, cosine similarity yielded slightly better performance. This aligns with the understanding that cosine similarity is more robust when comparing directional relationships in high-dimensional space.
+
+3. Semantic abstraction limits performance:
+   The family group performed worse than capital-common-countries. This may be due to BERT embeddings being more influenced by word usage in context, rather than strict relational logic.
+
+4. Embedding averaging introduces noise:
+   Because many words were split into multiple tokens (especially currencies and names), averaging token embeddings might dilute the semantics.
+
+Conclusion
+----------
+The transformer-based approach to analogy prediction using BERT embeddings shows promising results, particularly for well-structured and factual relationships. While cosine similarity provides a better metric than L2 distance, performance is still limited for abstract analogies, highlighting the difference between contextual language understanding and logical/relational reasoning.
