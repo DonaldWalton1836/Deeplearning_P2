@@ -6,7 +6,7 @@ from sklearn.metrics import classification_report, accuracy_score
 from transformers import BertTokenizer, BertForSequenceClassification
 from torch.utils.data import DataLoader, Dataset
 
-# Force device to CPU
+# Device to CPU
 device = torch.device("cpu")
 print(f"Using device: {device}")
 
