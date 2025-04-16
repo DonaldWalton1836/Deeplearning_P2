@@ -5,10 +5,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, accuracy_score
 from transformers import BertTokenizer, BertForSequenceClassification
 from torch.utils.data import DataLoader, Dataset
-import torch.nn.functional as F
 
-# Set device
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# Force device to CPU
+device = torch.device("cpu")
 print(f"Using device: {device}")
 
 # Load and prepare data
@@ -89,9 +88,9 @@ for epoch in range(epochs):
     for batch in train_dataloader:
         optimizer.zero_grad()
 
-        input_ids = batch['input_ids'].to(device)
-        attention_mask = batch['attention_mask'].to(device)
-        labels = batch['label'].to(device)
+        input_ids = batch['input_ids']
+        attention_mask = batch['attention_mask']
+        labels = batch['label']
 
         outputs = model(
             input_ids=input_ids,
@@ -115,9 +114,9 @@ for epoch in range(epochs):
 
     with torch.no_grad():
         for batch in test_dataloader:
-            input_ids = batch['input_ids'].to(device)
-            attention_mask = batch['attention_mask'].to(device)
-            labels = batch['label'].to(device)
+            input_ids = batch['input_ids']
+            attention_mask = batch['attention_mask']
+            labels = batch['label']
 
             outputs = model(
                 input_ids=input_ids,
@@ -126,8 +125,8 @@ for epoch in range(epochs):
 
             _, preds = torch.max(outputs.logits, dim=1)
 
-            predictions.extend(preds.cpu().tolist())
-            actual_labels.extend(labels.cpu().tolist())
+            predictions.extend(preds.tolist())
+            actual_labels.extend(labels.tolist())
 
     accuracy = accuracy_score(actual_labels, predictions)
     print(f"Epoch {epoch+1}/{epochs} - Test accuracy: {accuracy:.4f}")
