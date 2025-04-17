@@ -6,7 +6,7 @@ from sklearn.metrics import classification_report, accuracy_score
 from transformers import BertTokenizer, BertForSequenceClassification
 from torch.utils.data import DataLoader, Dataset
 
-# Device to CPU
+# Force device to CPU
 device = torch.device("cpu")
 print(f"Using device: {device}")
 
@@ -133,10 +133,11 @@ for epoch in range(epochs):
 
 # Final evaluation
 print("\nFinal Evaluation:")
-print(classification_report(actual_labels, predictions, target_names=['1 star', '2 stars', '3 stars', '4 stars', '5 stars']))
+print(classification_report(actual_labels, predictions, target_names=['1.0', '2.0', '3.0', '4.0', '5.0'], zero_division = 0 ))
 
 # Save the model
 print("Saving model...")
 model.save_pretrained('./bert_sentiment_model')
 tokenizer.save_pretrained('./bert_sentiment_model')
 print("Model saved successfully!")
+
